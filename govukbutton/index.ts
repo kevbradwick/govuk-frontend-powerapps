@@ -2,6 +2,9 @@ import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
 export class govukbutton implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
+    private button: HTMLButtonElement;
+    private context: ComponentFramework.Context<IInputs>;
+    private container: HTMLDivElement;
     /**
      * Empty constructor.
      */
@@ -20,7 +23,32 @@ export class govukbutton implements ComponentFramework.StandardControl<IInputs, 
      */
     public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
     {
+        this.context = context;
+        this.container = container;
+
         // Add control initialization code
+        this.button = document.createElement("button");
+        this.button.classList.add("govuk-button");
+        this.button.dataset.module = "govuk-button";
+
+        if (context.parameters.Label.raw) {
+            this.button.innerText = context.parameters.Label.raw;
+        }
+
+        this.setButtonType();
+        this.container.appendChild(this.button);
+    }
+
+    private setButtonType()
+    {   
+        this.button.classList.remove("govuk-button--secondary", "govuk-button--warning", "govuk-button--inverse");
+        if (this.context.parameters.ButtonType.raw === "secondary") {
+            this.button.classList.add("govuk-button--secondary");
+        } else if (this.context.parameters.ButtonType.raw === "warning") {
+            this.button.classList.add("govuk-button--warning");
+        } else if (this.context.parameters.ButtonType.raw === "inverse") {
+            this.button.classList.add("govuk-button--inverse");
+        }
     }
 
 
@@ -30,7 +58,11 @@ export class govukbutton implements ComponentFramework.StandardControl<IInputs, 
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void
     {
-        // Add code to update control view
+        if (context.parameters.Label.raw) {
+          this.button.innerText = context.parameters.Label.raw;
+        }
+
+        this.setButtonType();
     }
 
     /**
